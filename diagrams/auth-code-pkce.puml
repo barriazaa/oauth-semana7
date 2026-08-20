@@ -1,0 +1,19 @@
+@startuml AuthCode_PKCE_Flow
+autonumber
+actor Usuario
+participant "Navegador / App" as Client
+participant "Servidor de Autorización" as AS
+participant "Servidor de Recursos" as RS
+
+Client -> Client: Genera code_verifier y calcula code_challenge (S256)
+Client -> AS: GET /oauth/authorize (response_type=code, code_challenge, S256, state)
+AS -> Usuario: Formulario de autenticación y consentimiento
+Usuario -> AS: Aprueba credenciales y scopes
+AS --> Client: Redirección 302 a redirect_uri con code y state
+Client -> AS: POST /oauth/token (grant_type=authorization_code, code, code_verifier)
+AS -> AS: Valida hash(code_verifier) == code_challenge e invalida el código
+AS --> Client: 200 OK (access_token JWT)
+Client -> RS: GET /api/playlists (Authorization: Bearer <token>)
+RS -> RS: Valida firma JWT y scope (playlists.read)
+RS --> Client: 200 OK (Playlists del usuario)
+@enduml

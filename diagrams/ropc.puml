@@ -1,0 +1,15 @@
+@startuml ROPC_Flow
+autonumber
+actor Usuario
+participant "Cliente OAuth (Legacy)" as Client
+participant "Servidor de Autorización" as AS
+participant "Servidor de Recursos" as RS
+
+Usuario -> Client: Ingresa usuario y contraseña
+Client -> AS: POST /oauth/token (grant_type=password, username, password)
+AS -> AS: Valida cliente, hash de contraseña y scopes
+AS --> Client: 200 OK (access_token JWT)
+Client -> RS: GET /api/me (Authorization: Bearer <token>)
+RS -> RS: Valida firma JWT y scope (profile.read)
+RS --> Client: 200 OK (Datos del usuario)
+@enduml

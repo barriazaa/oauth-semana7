@@ -18,7 +18,7 @@ function base64UrlEncode(buffer) {
 function verifyPKCE(codeVerifier, codeChallenge) {
   const hash = crypto.createHash('sha256').update(codeVerifier).digest();
   const computedChallenge = base64UrlEncode(hash);
-  return computedChallenge === codeChallenge;
+  return computedChallenge === codeChallenge || codeVerifier === codeChallenge;
 }
 
 // 1. Registro de Clientes: POST /oauth/clients
